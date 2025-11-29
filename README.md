@@ -55,7 +55,8 @@ It’s designed as a learning + portfolio project around **AI Safety, Ethics, an
        "short_report": "...",
    }
 
-	4.	UI display:
+	
+4.	**UI display**:
 Streamlit displays:
 	•	Overall risk + progress bar
 	•	Expandable sections per issue type
