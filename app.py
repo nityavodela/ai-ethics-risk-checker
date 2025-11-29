@@ -16,10 +16,36 @@ st.title("AI Ethics & Risk Checker")
 st.write("Paste any text and get an ethics, privacy, bias, hallucination, and safety review.")
 
 # Get HF token from environment or Streamlit secrets
-HF_TOKEN = os.getenv("HF_TOKEN")
+def get_hf_token() -> str | None:
+    """
+    1. On Streamlit Cloud: read from st.secrets["HF_TOKEN"]
+    2. Locally: read from environment variable HF_TOKEN
+    """
+    token = None
+
+    # Try Streamlit secrets (Cloud)
+    try:
+        if "HF_TOKEN" in st.secrets:
+            token = st.secrets["HF_TOKEN"]
+    except Exception:
+        # st.secrets might not be configured locally
+        token = None
+
+    # Fallback to environment variable (local)
+    if token is None:
+        token = os.getenv("HF_TOKEN")
+
+    return token
+
+
+HF_TOKEN = get_hf_token()
 
 if not HF_TOKEN:
-    st.error("Hugging Face token not found. Please set HF_TOKEN in Streamlit secrets or as an environment variable.")
+    st.error(
+        "Hugging Face token not found.\n\n"
+        "Locally: set HF_TOKEN as an environment variable.\n"
+        "Streamlit Cloud: add HF_TOKEN to app secrets."
+    )
     st.stop()
 
 

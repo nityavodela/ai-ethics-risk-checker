@@ -1,2 +1,2 @@
-streamlit
-huggingface_hub[inference]
+streamlit>=1.36.0
+huggingface_hub[inference]>=0.26.0
