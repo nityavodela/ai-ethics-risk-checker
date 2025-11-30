@@ -231,11 +231,7 @@ Please analyze this text according to your instructions and respond in the exact
 # ==========================
 # 3. Streamlit UI
 # ==========================
-# ==========================
-# 3. Streamlit UI (FINAL MATERIAL DESIGN v3)
-# ==========================
 
-# ---- CLEAN MATERIAL CSS ----
 st.markdown("""
 <style>
 
@@ -341,20 +337,20 @@ st.markdown("""
 # ---- INPUT CARD ----
 st.markdown("### Input text")
 
-default_text = """Hi team,
+# default_text = """Hi team,
 
-We collected everyone's full names, phone numbers, and home addresses to share with our new marketing partner.
-They will use this list to run targeted ads and may also pass the data to other companies if needed.
+# We collected everyone's full names, phone numbers, and home addresses to share with our new marketing partner.
+# They will use this list to run targeted ads and may also pass the data to other companies if needed.
 
-Don't worry about consent, this is just standard practice.
+# Don't worry about consent, this is just standard practice.
 
-Thanks,
-Manager
-"""
+# Thanks,
+# Manager
+# """
 
 text = st.text_area(
     "",
-    value=default_text,
+    # value=default_text,
     height=200,
     placeholder="Paste any email, policy, or text…",
 )
