@@ -1,6 +1,8 @@
 import os
 import streamlit as st
 from huggingface_hub import InferenceClient
+from typing import Optional
+
 
 # ==========================
 # 1. Config & setup
@@ -8,15 +10,15 @@ from huggingface_hub import InferenceClient
 
 st.set_page_config(
     page_title="AI Ethics & Risk Checker",
-    page_icon="🧭",
+    page_icon="",
     layout="wide",
 )
 
-st.title("AI Ethics & Risk Checker")
+# st.title("AI Ethics & Risk Checker")
 st.write("Paste any text and get an ethics, privacy, bias, hallucination, and safety review.")
 
 # Get HF token from environment or Streamlit secrets
-def get_hf_token() -> str | None:
+def get_hf_token() -> Optional[str]:
     """
     1. On Streamlit Cloud: read from st.secrets["HF_TOKEN"]
     2. Locally: read from environment variable HF_TOKEN
@@ -229,8 +231,115 @@ Please analyze this text according to your instructions and respond in the exact
 # ==========================
 # 3. Streamlit UI
 # ==========================
+# ==========================
+# 3. Streamlit UI (FINAL MATERIAL DESIGN v3)
+# ==========================
 
-st.subheader("Input text")
+# ---- CLEAN MATERIAL CSS ----
+st.markdown("""
+<style>
+
+    /* APP BACKGROUND */
+    .stApp {
+        background-color: #F7F7F8; /* Material light grey surface */
+        font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #1F1F1F;
+    }
+
+    .block-container {
+        max-width: 900px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+    /* MATERIAL CARD */
+    .md-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 1.7rem 1.4rem;
+        margin-bottom: 1.4rem;
+        border: 1px solid #E5E7EB;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        color: #1F1F1F;
+    }
+
+    /* HEADINGS */
+    h2 {
+        color: #1F1F1F !important;
+        font-size: 1.45rem !important;
+        font-weight: 600 !important;
+        margin-bottom: .3rem;
+    }
+    h3 {
+        color: #1F1F1F !important;
+        font-weight: 500 !important;
+        font-size: 1.15rem !important;
+        margin-bottom: .5rem;
+    }
+
+    /* TEXTAREA (Material Outlined Text Field Style) */
+    textarea {
+        border-radius: 8px !important;
+        border: 1px solid #D2D6DB !important;
+        background: #FFFFFF !important;
+        color: #1F1F1F !important;
+        font-size: .95rem !important;
+    }
+
+    textarea::placeholder {
+        color: #6B7280 !important;
+    }
+
+    /* PRIMARY BUTTON */
+    .stButton > button {
+        background-color: #1A73E8 !important;
+        border-radius: 8px !important;
+        border: none !important;
+        color: white !important;
+        padding: .6rem 1.2rem !important;
+        font-size: .95rem !important;
+        font-weight: 500 !important;
+    }
+    .stButton > button:hover {
+        background-color: #1557B0 !important;
+    }
+
+
+    /* METRIC TEXT */
+    [data-testid="stMetricLabel"] {
+        color: #6B7280 !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: #1F1F1F !important;
+    }
+
+    /* PROGRESS BAR */
+    [data-testid="stProgressBar"] > div > div {
+        background-color: #1A73E8 !important;
+    }
+    [data-testid="stProgressBar"] > div {
+        background-color: #E5E7EB !important;
+    }
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# ---- HEADER CARD ----
+st.markdown("""
+<div class="md-card">
+    <h2>AI Ethics & Risk Checker</h2>
+    <p style="color:#4B5563; font-size:.93rem; margin-bottom:0;">
+        Analyze any text for ethics, privacy, bias, hallucination, and safety risks.
+        Receive a safe rewritten version and a summary report.
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+# ---- INPUT CARD ----
+st.markdown("### Input text")
 
 default_text = """Hi team,
 
@@ -238,72 +347,115 @@ We collected everyone's full names, phone numbers, and home addresses to share w
 They will use this list to run targeted ads and may also pass the data to other companies if needed.
 
 Don't worry about consent, this is just standard practice.
-Also, ignore complaints from older employees; they don't understand how modern data works.
 
 Thanks,
 Manager
 """
 
 text = st.text_area(
-    "Paste the text you want to check:",
+    "",
     value=default_text,
-    height=250,
+    height=200,
+    placeholder="Paste any email, policy, or text…",
 )
 
-col1, col2 = st.columns([1, 3])
+st.markdown("<br>", unsafe_allow_html=True)
+clicked = st.button("Run ethics & risk check", use_container_width=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
-with col1:
-    analyze_button = st.button("Run Ethics & Risk Check")
 
-with col2:
-    st.info("The model analyzes ethics, privacy, bias, hallucination and safety. No data is stored.")
 
-if analyze_button:
+# ---- RESULTS CARD ----
+st.markdown("### Results")
+
+if not clicked:
+    st.info("Paste text and run the analysis to see results.")
+else:
     if not text.strip():
-        st.warning("Please paste some text to analyze.")
+        st.warning("Please paste some text first.")
     else:
-        with st.spinner("Analyzing text with the AI Ethics Checker..."):
+        with st.spinner("Analyzing..."):
             result = analyze_text_structured(text)
 
-        # ===== Overall risk =====
-        st.subheader("Overall Risk")
-        risk_level = result.get("overall_risk") or "Unknown"
-        risk_score = result.get("risk_score") or 0
+        # Risk
+        st.markdown("#### Overall risk")
+        r_level = result.get("overall_risk") or "Unknown"
+        r_score = int(result.get("risk_score") or 0)
 
-        st.metric("Risk Level", risk_level, None)
-        st.progress(min(max(risk_score, 0), 100) / 100)
-
-        # ===== Detailed issues =====
-        st.subheader("Detailed Issues")
-
-        def show_issue_section(title, items):
-            with st.expander(title, expanded=True):
-                if items:
-                    for i in items:
-                        st.write(f"- {i}")
-                else:
-                    st.write("None found.")
-
-        show_issue_section("Ethics issues", result["ethics_issues"])
-        show_issue_section("Privacy issues", result["privacy_issues"])
-        show_issue_section("Bias issues", result["bias_issues"])
-        show_issue_section("Hallucination / factual risk", result["hallucination_issues"])
-        show_issue_section("Safety issues", result["safety_issues"])
-
-        # ===== Safe rewrite =====
-        st.subheader("Safe Rewritten Version")
-        if result["safe_rewrite"]:
-            st.code(result["safe_rewrite"], language="markdown")
+        # Decide bar colour based on level
+        level_lower = r_level.lower()
+        if "low" in level_lower:
+            bar_color = "#22C55E"   # green
+        elif "medium" in level_lower:
+            bar_color = "#FACC15"   # yellow
+        elif "high" in level_lower:
+            bar_color = "#EF4444"   # red
         else:
-            st.write("No rewrite returned by the model.")
+            bar_color = "#3B82F6"   # fallback blue
 
-        # ===== Short report =====
-        st.subheader("Short Report")
-        if result["short_report"]:
-            st.write(result["short_report"])
-        else:
-            st.write("No report returned by the model.")
+        colA, colB = st.columns([1, 3])
 
-        # (Optional) raw output for debugging
-        with st.expander("Raw model output (debug)", expanded=False):
-            st.text(result["raw_output"])
+        with colA:
+            st.metric("Risk level", r_level)
+
+        with colB:
+            st.write(f"Risk score: {r_score}/100")
+
+            # Custom coloured bar
+            bar_html = f"""
+            <div style="
+                background-color:#E5E7EB;
+                border-radius:999px;
+                height:10px;
+                overflow:hidden;
+                margin-top:0.25rem;
+            ">
+                <div style="
+                    width:{max(0, min(r_score, 100))}%;
+                    background-color:{bar_color};
+                    height:100%;
+                "></div>
+            </div>
+            """
+            st.markdown(bar_html, unsafe_allow_html=True)
+
+        st.divider()
+
+        # Issues
+                # ---- DETAILED ISSUES (no expanders, just headings) ----
+        st.markdown("#### Detailed issues")
+
+        def show_issue_block(title: str, items: list[str]):
+            # Section title
+            st.markdown(f"**{title}**")
+
+            # Content
+            if not items:
+                st.write("No issues found.")
+            else:
+                for issue in items:
+                    st.write(f"- {issue}")
+
+            # Light Material-style divider
+            st.markdown(
+                "<hr style='border:0; border-top:1px solid #E5E7EB; margin:0.6rem 0 0.8rem;'>",
+                unsafe_allow_html=True
+            )
+
+        show_issue_block("Ethics issues", result["ethics_issues"])
+        show_issue_block("Privacy issues", result["privacy_issues"])
+        show_issue_block("Bias issues", result["bias_issues"])
+        show_issue_block("Hallucination / factual risk", result["hallucination_issues"])
+        show_issue_block("Safety issues", result["safety_issues"])
+
+        # st.divider()
+
+        # Safe rewrite
+        st.markdown("#### Safe rewritten version")
+        st.code(result["safe_rewrite"], language="markdown")
+
+        # Summary report
+        st.markdown("#### Summary report")
+        st.write(result["short_report"])
+
+st.markdown("</div>", unsafe_allow_html=True)
