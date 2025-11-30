@@ -454,4 +454,28 @@ else:
         st.markdown("#### Summary report")
         st.write(result["short_report"])
 
+        # ---- ABOUT / DISCLAIMER CARD ----
+        # ---- ABOUT / DISCLAIMER CARD ----
+        st.markdown("""
+        <div style="
+            background-color:#000000;
+            color:#FFFFFF;
+            padding:1.6rem 1.4rem;
+            border-radius:14px;
+            margin-top:1.8rem;
+            border:1px solid #1A1A1A;
+            box-shadow:0 2px 8px rgba(0,0,0,0.35);
+        ">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+                <span style="font-size:1.1rem; font-weight:600; color:#FFFFFF;">About this tool</span>
+            </div>
+            <p style="color:#EAEAEA; font-size:0.95rem; line-height:1.55; margin-top:0.4rem;">
+                This AI Ethics & Risk Checker is an educational tool built using open-source models and free inference APIs.  
+                It highlights potential risks in text, but it is not a replacement for legal, compliance, or professional review.  
+                Always validate AI outputs before making decisions.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
 st.markdown("</div>", unsafe_allow_html=True)
+
